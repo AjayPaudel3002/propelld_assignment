@@ -62,6 +62,11 @@ export default class NotEarning extends React.Component {
 	};
 
 	proceed = () => {
+			let finalObject = {};
+			Object.keys(this.state).forEach(key => {
+				finalObject[key] = this.state[key]
+			})
+			this.props.set_final(finalObject);
 			this.props.history.push("/co_application");
 	};
 

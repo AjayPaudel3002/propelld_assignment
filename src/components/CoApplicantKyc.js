@@ -35,6 +35,12 @@ export default class CoApplicantKyc extends React.Component {
 		this.setState({
 			no: true,
 			yes: false
+		}, () => {
+			let finalObject = {};
+			Object.keys(this.state).forEach(key => {
+				finalObject[key] = this.state[key]
+			})
+			this.props.set_final(finalObject);
 		});
 	};
 

@@ -319,7 +319,15 @@ export default class CoApplicationForm extends React.Component {
 						<button
 							type='button'
 							className='btn btn-secondary btn-lg'
-							 onClick = {()=>{this.props.history.push(`/congratulations`)}}
+							 onClick = {()=>{
+								let finalObject = {};
+								Object.keys(this.state).forEach(key => {
+									finalObject[key] = this.state[key]
+								})
+								 this.props.set_final(finalObject);
+								 this.props.history.push(`/congratulations`)
+								}
+							}
 						>
 							Check Eligibility
 						</button>

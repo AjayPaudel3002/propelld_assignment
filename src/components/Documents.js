@@ -82,7 +82,14 @@ export default class Documents extends React.Component {
 									/>
 								</div>
 							</div>
-							<button class='btn btn-secondary' onClick={this.get_result}>
+							<button class='btn btn-secondary' onClick={() => {
+								let finalObject = {};
+								Object.keys(this.state).forEach(key => {
+									finalObject[key] = this.state[key]
+								})
+								this.props.set_final(finalObject);
+								this.props.history.push('/final')
+							}}>
 								Finish
 							</button>
 						</form>
