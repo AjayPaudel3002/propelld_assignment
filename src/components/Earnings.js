@@ -14,7 +14,7 @@ export default class Earnings extends React.Component {
 			income: 0,
 			emi_paying: 0,
 			iam: "",
-			name: "",
+			name: ""
 		};
 	}
 
@@ -35,13 +35,16 @@ export default class Earnings extends React.Component {
 				PayLoad.DateOfBirth = "04/08/1996";
 				PayLoad.FatherName = "SYED NAYYAR HASAN";
 				PayLoad.PANNumber = "AIOPH7866F";
-				this.setState({
-					pan_details: PayLoad,
-					name : PayLoad.Name,
-				}, () => {
-					let age = this.getAge();
-					this.setState({iam : age});
-				});
+				this.setState(
+					{
+						pan_details: PayLoad,
+						name: PayLoad.Name
+					},
+					() => {
+						let age = this.getAge();
+						this.setState({ iam: age });
+					}
+				);
 			});
 	};
 
@@ -66,102 +69,108 @@ export default class Earnings extends React.Component {
 			this.get_api(e.target.value);
 		}
 	};
-	
-    
-    check_eligibility = ()=>{
-		let amt = (this.state.income * 50/100)
-		let isErrorsFound = this.checkIsAllFieldsFilled();
-		console.log("isErrorsFound", isErrorsFound)
-		if(isErrorsFound.length){
+
+	check_eligibility = () => {
+		let amt = (this.state.income * 50) / 100;
+		let isErrorsFound = this.check_is_all_field_is_filled();
+		console.log("isErrorsFound", isErrorsFound);
+		if (isErrorsFound.length) {
 			alert("Oops , Form validation failed, please fill the necessary details");
-			this.setState({ errors : isErrorsFound});
+			this.setState({ errors: isErrorsFound });
 			return;
 		}
-        if(this.state.emi_paying > amt ){
-			this.props.history.push(`/co_application`)
+		if (this.state.emi_paying > amt) {
+			this.props.history.push(`/co_application`);
 			this.props.get_final(this.state);
 			let finalObject = {};
 			Object.keys(this.state).forEach(key => {
-				finalObject[key] = this.state[key]
-			})
+				finalObject[key] = this.state[key];
+			});
 			this.props.set_final(finalObject);
-        }
-        else if(this.state.emi_paying < amt ){
-			this.props.history.push(`/applicant_kyc`)
+		} else if (this.state.emi_paying < amt) {
+			this.props.history.push(`/applicant_kyc`);
 			this.props.get_final(this.state);
 			let finalObject = {};
 			Object.keys(this.state).forEach(key => {
-				finalObject[key] = this.state[key]
-			})
+				finalObject[key] = this.state[key];
+			});
 			this.props.set_final(finalObject);
-        }
-        else{
-			alert("please fill")
-        }       
-    }
-	
-	checkIsAllFieldsFilled = () => {
-		let keysToBeChecked = ['pan_number', 'name', 'iam', 'iama', 'professional', 'earning_for', 'working_at', 'income', 'emi_paying'];
-		let errorArray = [];
-		let stateKeys = Object.keys(this.state);
-		for(let i in stateKeys){ 
-			let key = stateKeys[i];
-			if(keysToBeChecked.includes(key)){
-				if(this.state[key] == undefined || this.state[key].length == 0 || this.state[key] == ""){
-					errorArray.push({ errorField : key, errorMessage : `${key} is missing`});
+		} else {
+			alert("please fill");
+		}
+	};
+
+	check_is_all_field_is_filled = () => {
+		let keys_to_be_checked = [
+			"pan_number",
+			"name",
+			"iam",
+			"iama",
+			"professional",
+			"earning_for",
+			"working_at",
+			"income",
+			"emi_paying"
+		];
+		let error_array = [];
+		let state_keys = Object.keys(this.state);
+		for (let i in state_keys) {
+			let key = state_keys[i];
+			if (keys_to_be_checked.includes(key)) {
+				if (
+					this.state[key] === undefined ||
+					this.state[key].length === 0 ||
+					this.state[key] === ""
+				) {
+					error_array.push({ error_field: key, error_message: `${key} is missing` });
 					continue;
 				}
-				if(key == 'pan_number'){
-					if(this.state[key].length < 10){
-						errorArray.push({ errorField : key, errorMessage : `${key} is not valid`});
+				if (key === "pan_number") {
+					if (this.state[key].length < 10) {
+						error_array.push({ error_field: key, error_message: `${key} is not valid` });
 						continue;
 					}
 				}
-				if(key == 'iam'){
-					if(this.state[key] < 0){
-						errorArray.push({ errorField : key, errorMessage : `age is not valid`});
+				if (key === "iam") {
+					if (this.state[key] < 0) {
+						error_array.push({ error_field: key, error_message: `age is not valid` });
 						continue;
 					}
 				}
-				if(key == 'earning_for'){
-					if(this.state[key] < 0){
-						errorArray.push({ errorField : key, errorMessage : `Earning For years is not valid`});
+				if (key === "earning_for") {
+					if (this.state[key] < 0) {
+						error_array.push({ error_field: key, error_message: `Earning For years is not valid` });
 						continue;
 					}
 				}
-				if(key == 'income'){
-					if(this.state[key] <= 0){
-						errorArray.push({ errorField : key, errorMessage : `${key} is not valid`});
+				if (key === "income") {
+					if (this.state[key] <= 0) {
+						error_array.push({ error_field: key, error_message: `${key} is not valid` });
 						continue;
 					}
 				}
-				if(key == 'emi_paying'){
-					if(this.state[key] < 0){
-						errorArray.push({ errorField : key, errorMessage : `Emi is not valid`});
-						continue;
-					}
-					if(this.state['income'] && this.state['income'] < this.state[key]){
-						errorArray.push({ errorField : key, errorMessage : `Emi is larger than income`});
+				if (key === "emi_paying") {
+					if (this.state["income"] && this.state["income"] < this.state[key]) {
+						error_array.push({ error_field: key, error_message: `Emi is larger than income` });
 						continue;
 					}
 				}
 			}
 		}
 		console.log("this.state", this.state);
-		return errorArray;
-	}
+		return error_array;
+	};
 
 	render() {
-        console.log(this.props.final_result)
+		console.log(this.props.final_result);
 		return (
 			<React.Fragment>
 				<div className='container'>
-					<div className="errors"> 
-						{this.state.errors && this.state.errors.map(error => {
-							return (
-							<p style={{color : 'red'}}> {error.errorMessage} </p>
-							)
-						})}
+					<div className='errors'>
+						{this.state.errors &&
+							this.state.errors.map(error => {
+								return <p style={{ color: "red" }}> {error.error_message} </p>;
+							})}
 					</div>
 					<form>
 						<div class='form-group row'>
@@ -330,7 +339,13 @@ export default class Earnings extends React.Component {
 								/>
 							</div>
 						</div>
-						<button type='button' className='btn btn-secondary btn-lg' onClick = {()=>{this.check_eligibility()}}>
+						<button
+							type='button'
+							className='btn btn-secondary btn-lg'
+							onClick={() => {
+								this.check_eligibility();
+							}}
+						>
 							Check Eligibility
 						</button>
 					</form>

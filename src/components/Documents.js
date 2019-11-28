@@ -7,8 +7,8 @@ export default class Documents extends React.Component {
 		super(props);
 		this.state = {
 			array: [],
-			FrontImageUrl: "",
-			BackImageUrl: ""
+			front_image_url: "",
+			back_image_url: ""
 		};
 	}
 	upload_document = e => {
@@ -18,29 +18,31 @@ export default class Documents extends React.Component {
 	};
 
 	get_result = e => {
-		const FrontImageUrl = { FrontImageUrl: this.state.FrontImageUrl };
-		const BackImageUrl = { BackImageUrl: this.state.BackImageUrl };
-		console.log(this.state);
-
-		axios({
-			method: "POST",
-			url: "http://localhost/hack/2019/verification/aadhaar/extract",
-			data: {
-				FrontImageUrl: this.state.FrontImageUrl,
-				BackImageUrl: this.state.BackImageUrl
-			}
-		})
-			.then(response => {
-				console.log(response.data);
-				console.log(response.data.PayLoad);
-				const object = {
-					PayLoad: response.data.PayLoad
-				};
-				this.setState({
-					array: [...this.state.array, object]
-				});
+		console.log(this.state.front_image_url);
+		if (this.state.front_image_url !== "" && this.state.back_image_url !== "") {
+			axios({
+				method: "POST",
+				url: "http://localhost/hack/2019/verification/aadhaar/extract",
+				data: {
+					front_image_url: this.state.front_image_url,
+					back_image_url: this.state.back_image_url
+				}
 			})
-			.catch(err => alert(err));
+				.then(response => {
+					console.log(response.data);
+					console.log(response.data.PayLoad);
+					const object = {
+						PayLoad: response.data.PayLoad
+					};
+					this.setState({
+						array: [...this.state.array, object]
+					});
+				})
+				.catch(err => alert(err));
+			this.props.history.push("/final");
+		} else if (this.state.front_image_url === "" && this.state.back_image_url === "") {
+			alert("Please fill details");
+		}
 	};
 
 	render() {
@@ -50,7 +52,7 @@ export default class Documents extends React.Component {
 				<br></br>
 				<div className='container'>
 					<h3>USER AADHAR IMAGE URL</h3>
-                    <br></br>
+					<br></br>
 					<div className='row'>
 						<br></br>
 						<form>
@@ -61,9 +63,10 @@ export default class Documents extends React.Component {
 								<div class='col-sm-10'>
 									<input
 										type='file'
-										class='form-control form-control-lg'
+                                        class='form-control form-control-lg'
+                                        name = "front_image_url"
 										placeholder=''
-										value={this.state.FrontImageUrl}
+										value={this.state.front_image_url}
 										onChange={this.upload_document}
 									/>
 								</div>
@@ -75,21 +78,26 @@ export default class Documents extends React.Component {
 								<div class='col-sm-10'>
 									<input
 										type='file'
-										class='form-control form-control-lg'
+                                        class='form-control form-control-lg'
+                                        name= "back_image_url"
 										placeholder=''
-										value={this.state.FrontImageUrl}
+										value={this.state.back_image_url}
 										onChange={this.upload_document}
 									/>
 								</div>
 							</div>
-							<button class='btn btn-secondary' onClick={() => {
-								let finalObject = {};
-								Object.keys(this.state).forEach(key => {
-									finalObject[key] = this.state[key]
-								})
-								this.props.set_final(finalObject);
-								this.props.history.push('/final')
-							}}>
+							<button
+                                class='btn btn-secondary'
+                                type="button"
+								onClick={() => {
+									let finalObject = {};
+									Object.keys(this.state).forEach(key => {
+										finalObject[key] = this.state[key];
+									});
+                                    this.props.set_final(finalObject);
+                                    this.get_result()
+								}}
+							>
 								Finish
 							</button>
 						</form>

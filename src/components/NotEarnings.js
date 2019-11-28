@@ -21,10 +21,10 @@ export default class NotEarning extends React.Component {
 			}
 		})
 			.then(response => {
-                console.log(response.data.PayLoad);
-                this.setState({
-                    pan_details:response.data.PayLoad
-                })
+				console.log(response.data.PayLoad);
+				this.setState({
+					pan_details: response.data.PayLoad
+				});
 			})
 			.catch(error => {
 				let PayLoad = {};
@@ -32,9 +32,16 @@ export default class NotEarning extends React.Component {
 				PayLoad.DateOfBirth = "04/08/1996";
 				PayLoad.FatherName = "SYED NAYYAR HASAN";
 				PayLoad.PANNumber = "AIOPH7866F";
-				this.setState({
-					pan_details: PayLoad
-				});
+				this.setState(
+					{
+						pan_details: PayLoad,
+						name: PayLoad.Name
+					},
+					() => {
+						let age = this.getAge();
+						this.setState({ iam: age });
+					}
+				);
 			});
 	};
 
@@ -45,9 +52,9 @@ export default class NotEarning extends React.Component {
 		if (e.target.value.length === 10) {
 			this.get_api(e.target.value);
 		}
-    };
-    
-    getAge = () => {
+	};
+
+	getAge = () => {
 		if (this.state.pan_details.PANNumber !== undefined) {
 			var today = new Date();
 			var birthDate = new Date(this.state.pan_details.DateOfBirth);
@@ -62,12 +69,52 @@ export default class NotEarning extends React.Component {
 	};
 
 	proceed = () => {
-			let finalObject = {};
-			Object.keys(this.state).forEach(key => {
-				finalObject[key] = this.state[key]
-			})
-			this.props.set_final(finalObject);
-			this.props.history.push("/co_application");
+        let isErrorsFound = this.check_is_all_field_is_filled();
+		console.log("isErrorsFound", isErrorsFound);
+		if (isErrorsFound.length) {
+			alert("Oops , Form validation failed, please fill the necessary details");
+			this.setState({ errors: isErrorsFound });
+			return;
+		}
+		let final_object = {};
+		Object.keys(this.state).forEach(key => {
+			final_object[key] = this.state[key];
+		});
+		this.props.set_final(final_object);
+		this.props.history.push("/co_application");
+	};
+
+	check_is_all_field_is_filled = () => {
+		let keys_to_be_checked = ["pan_number", "name", "iam"];
+		let error_array = [];
+		let state_keys = Object.keys(this.state);
+		for (let i in state_keys) {
+			let key = state_keys[i];
+			if (keys_to_be_checked.includes(key)) {
+				if (
+					this.state[key] === undefined ||
+					this.state[key].length === 0 ||
+					this.state[key] === ""
+				) {
+					error_array.push({ error_field: key, error_message: `${key} is missing` });
+					continue;
+				}
+				if (key === "pan_number") {
+					if (this.state[key].length < 10) {
+						error_array.push({ error_field: key, error_message: `${key} is not valid` });
+						continue;
+					}
+				}
+				if (key === "iam") {
+					if (this.state[key] < 0) {
+						error_array.push({ error_field: key, error_message: `age is not valid` });
+						continue;
+					}
+				}
+			}
+		}
+		console.log("this.state", this.state);
+		return error_array;
 	};
 
 	render() {
